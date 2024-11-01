@@ -15,6 +15,10 @@ gem "puma", "~> 5.0"
 # Use openAI gem
 gem "ruby-openai"
 
+# User to upload photos to s3
+gem 'aws-sdk-s3'
+
+
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"

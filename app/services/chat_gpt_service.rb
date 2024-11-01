@@ -6,14 +6,18 @@ class ChatGptService
   end
 
   def generate_scenario(prompt)
-    response = @client.chat(
-      parameters: {
-        model: "gpt-4", # or "gpt-3.5-turbo" if needed
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 200,
-        temperature: 0.7
-      }
-    )
-    response.dig("choices", 0, "message", "content").strip
+    begin
+      response = @client.chat(
+        parameters: {
+          model: "gpt-4", # or "gpt-3.5-turbo" if needed
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 200,
+          temperature: 0.7
+        }
+      )
+      response.dig("choices", 0, "message", "content").strip
+    rescue OpenAI::Error => e
+      Rails.logger.error("Error generating scenario: #{e.message}")
+    end
   end
 end
