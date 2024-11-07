@@ -82,11 +82,14 @@ GEM
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.10.1)
       aws-eventstream (~> 1, >= 1.0.2)
+    bigdecimal (3.1.8)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
     builder (3.3.0)
+    coderay (1.1.3)
     concurrent-ruby (1.3.4)
     crass (1.0.6)
+    csv (3.3.0)
     date (3.3.4)
     debug (1.9.2)
       irb (~> 1.10)
@@ -104,6 +107,10 @@ GEM
       net-http
     globalid (1.2.1)
       activesupport (>= 6.1)
+    httparty (0.22.0)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -126,6 +133,8 @@ GEM
     mini_mime (1.1.5)
     minitest (5.25.1)
     msgpack (1.7.3)
+    multi_xml (0.7.1)
+      bigdecimal (~> 3.1)
     multipart-post (2.4.1)
     net-http (0.4.1)
       uri
@@ -152,6 +161,9 @@ GEM
     nokogiri (1.16.7-x86_64-linux)
       racc (~> 1.4)
     pg (1.5.6)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     psych (5.1.2)
       stringio
     puma (5.6.9)
@@ -221,7 +233,9 @@ DEPENDENCIES
   bootsnap
   debug
   dotenv
+  httparty
   pg (~> 1.1, >= 1.1.4)
+  pry
   puma (~> 5.0)
   rails (~> 7.0.2, >= 7.0.2.4)
   ruby-openai
