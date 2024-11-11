@@ -25,14 +25,14 @@ jobs:
   
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails .
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails:latest .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails:latest
       
 
-          - name: Setup SSH
-          uses: webfactory/ssh-agent@v0.5.3
-          with:
-            ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
       
       - name: Create .env file
         run: |
