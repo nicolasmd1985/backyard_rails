@@ -35,7 +35,7 @@ jobs:
           ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
 
       - name: Ensure deploy directory exists on EC2
-        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} '[ ! -d /home/ubuntu/deploy_backyard ] && mkdir -p /home/ubuntu/deploy_backyard; chmod 755 /home/ubuntu/deploy_backyard'
+        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} '[ ! -d /home/ubuntu/deploy_backyard ] && rm -f /home/ubuntu/deploy_backyard; mkdir -p /home/ubuntu/deploy_backyard; chmod 755 /home/ubuntu/deploy_backyard'
       
       - name: Create .env file
         run: |
