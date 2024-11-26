@@ -48,17 +48,17 @@ jobs:
           echo "TREFLE_API_KEY=${{ secrets.TREFLE_API_KEY }}" >> .env.production
           echo "SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}" >> .env.production
 
-          scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
+          scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
     
       - name: Ensure deploy directory exists on EC2
-        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'mkdir -p /home/ubuntu/deploy && chmod 755 /home/ubuntu/deploy'
+        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'mkdir -p /home/ubuntu/deploy_backyard && chmod 755 /home/ubuntu/deploy_backyard'
       
       - name: Copy deploy script to EC2
-        run: scp -o StrictHostKeyChecking=no deploy_script.sh ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
+        run: scp -o StrictHostKeyChecking=no deploy_script.sh ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
 
       - name: Copy docker-compose.yml to EC2
-        run: scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
+        run: scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
 
       - name: Deploy with Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'cd /home/ubuntu/deploy && bash deploy_script.sh'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'cd /home/ubuntu/deploy_backyard && bash deploy_script.sh'
