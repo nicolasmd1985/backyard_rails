@@ -33,6 +33,9 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+
+      - name: Ensure deploy directory exists on EC2
+        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} '[ ! -d /home/ubuntu/deploy_backyard ] && mkdir -p /home/ubuntu/deploy_backyard; chmod 755 /home/ubuntu/deploy_backyard'
       
       - name: Create .env file
         run: |
@@ -50,9 +53,6 @@ jobs:
 
           scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
     
-      - name: Ensure deploy directory exists on EC2
-        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'mkdir -p /home/ubuntu/deploy_backyard && chmod 755 /home/ubuntu/deploy_backyard'
-      
       - name: Copy deploy script to EC2
         run: scp -o StrictHostKeyChecking=no deploy_script.sh ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
 
