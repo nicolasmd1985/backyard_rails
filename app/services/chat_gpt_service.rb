@@ -28,7 +28,7 @@ class ChatGptService
           # Use a cheaper model like gpt-3.5-turbo instead of gpt-4
           model: "gpt-3.5-turbo",
           messages: [{ role: "user", content: formatted_prompt }],
-          max_tokens: 800,   # Reduced max tokens to lower cost
+          max_tokens: 2000,   # Reduced max tokens to lower cost
           temperature: 0.7
         }
       )
