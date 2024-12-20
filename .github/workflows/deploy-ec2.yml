@@ -50,6 +50,7 @@ jobs:
           echo "region=${{ secrets.region }}" >> .env.production
           echo "TREFLE_API_KEY=${{ secrets.TREFLE_API_KEY }}" >> .env.production
           echo "SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}" >> .env.production
+          echo "DEZGO_API_KEY=${{ secrets.DEZGO_API_KEY }}" >> .env.production
 
           scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
     
