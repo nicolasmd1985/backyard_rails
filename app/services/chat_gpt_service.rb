@@ -9,23 +9,33 @@ class ChatGptService
 
   def generate_scenario(prompt)
     begin
-      # Adding instruction to prompt for JSON formatted response
-      formatted_prompt = "#{prompt}\n\nPlease respond with a JSON array of objects, each containing the following keys: name, scientific_name, and description for each recommended plant."
+      # Add clear instructions for a short, cost-effective response
+      formatted_prompt = <<~PROMPT
+        #{prompt}
+
+        Please respond with a JSON array of exactly 5 objects. 
+        Each object should contain: 
+        - name: The common name of the recommended plant (short string)
+        - scientific_name: The scientific name (short string)
+        - description: A brief, one to two sentence description 
+          of why this plant is suitable.
+
+        Keep responses concise and do not include extra text outside of the JSON array.
+      PROMPT
+
       response = @client.chat(
         parameters: {
-          model: "gpt-4",
+          # Use a cheaper model like gpt-3.5-turbo instead of gpt-4
+          model: "gpt-3.5-turbo",
           messages: [{ role: "user", content: formatted_prompt }],
-          max_tokens: 700,
+          max_tokens: 800,   # Reduced max tokens to lower cost
           temperature: 0.7
         }
       )
-  
-      # Extract content from the response
-      content = response.dig("choices", 0, "message", "content").strip
-  
-      # Attempt to parse as JSON and fetch images
+
+      content = response.dig("choices", 0, "message", "content")&.strip
       plants = parse_scenario_content(content)
-      plants.is_a?(Array) ? add_image_urls(plants) : plants # Ensure `plants` is an array before adding URLs
+      plants.is_a?(Array) ? add_image_urls(plants) : plants
     rescue OpenAI::Error => e
       Rails.logger.error("Error generating scenario: #{e.message}")
       { "error" => "Could not parse response." }
@@ -49,22 +59,19 @@ class ChatGptService
   end
 
   def fetch_plant_image(plant_name)
-    formatted_name = plant_name.gsub(' ', '_').downcase # Format full name for initial search
-    image_url = search_image(formatted_name)            # First attempt with full name
-    
-    # If no image found, try word-by-word search
+    formatted_name = plant_name.gsub(' ', '_').downcase 
+    image_url = search_image(formatted_name)
+
     if image_url == "Image not found"
       plant_name.split.each do |word|
-        image_url = search_image(word)                  # Attempt with individual word
-        break if image_url != "Image not found"         # Stop if an image is found
+        image_url = search_image(word)
+        break if image_url != "Image not found"
       end
     end
-  
-    image_url # Return the found image URL or "Image not found"
+
+    image_url
   end
-  
-  private
-  
+
   def search_image(query)
     response = HTTParty.get("https://en.wikipedia.org/w/api.php", query: {
       action: "query",
@@ -73,9 +80,8 @@ class ChatGptService
       format: "json",
       pithumbsize: 500
     })
-  
+
     page = response.dig("query", "pages").values.first
     page&.dig("thumbnail", "source") || "Image not found"
   end
-  
 end
