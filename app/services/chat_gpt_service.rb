@@ -10,10 +10,23 @@ class ChatGptService
   def generate_scenario(prompt)
     begin
       # Add clear instructions for a short, cost-effective response
+      # formatted_prompt = <<~PROMPT
+      #   #{prompt}
+
+      #   Please respond with a JSON array of exactly 5 objects. 
+      #   Each object should contain: 
+      #   - name: The common name of the recommended plant (short string)
+      #   - scientific_name: The scientific name (short string)
+      #   - description: A brief, one to two sentence description 
+      #     of why this plant is suitable.
+
+      #   Keep responses concise and do not include extra text outside of the JSON array.
+      # PROMPT
+      
       formatted_prompt = <<~PROMPT
         #{prompt}
 
-        Please respond with a JSON array of exactly 5 objects. 
+        Please respond with a JSON array of max 10 objects. 
         Each object should contain: 
         - name: The common name of the recommended plant (short string)
         - scientific_name: The scientific name (short string)
