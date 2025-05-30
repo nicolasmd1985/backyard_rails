@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v2
 
@@ -24,13 +25,17 @@ jobs:
   
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/ordenappweb:latest .
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/ordenappweb:latest
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails:latest .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/backyardrails:latest
       
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+
+      - name: Ensure deploy directory exists on EC2
+        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} '[ ! -d /home/ubuntu/deploy_backyard ] && rm -f /home/ubuntu/deploy_backyard; mkdir -p /home/ubuntu/deploy_backyard; chmod 755 /home/ubuntu/deploy_backyard'
       
       - name: Create .env file
         run: |
@@ -44,18 +49,17 @@ jobs:
           echo "bucket=${{ secrets.bucket }}" >> .env.production
           echo "region=${{ secrets.region }}" >> .env.production
           echo "TREFLE_API_KEY=${{ secrets.TREFLE_API_KEY }}" >> .env.production
+          echo "SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}" >> .env.production
+          echo "DEZGO_API_KEY=${{ secrets.DEZGO_API_KEY }}" >> .env.production
 
-          scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
-
-      - name: Ensure deploy directory exists on EC2
-        run: ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'mkdir -p /home/ubuntu/deploy && chmod 755 /home/ubuntu/deploy'
-      
+          scp -o StrictHostKeyChecking=no .env.production ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
+    
       - name: Copy deploy script to EC2
-        run: scp -o StrictHostKeyChecking=no deploy_script.sh ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
+        run: scp -o StrictHostKeyChecking=no deploy_script.sh ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
 
       - name: Copy docker-compose.yml to EC2
-        run: scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy
+        run: scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.AWS_EC2_HOST }}:/home/ubuntu/deploy_backyard
 
       - name: Deploy with Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'cd /home/ubuntu/deploy && bash deploy_script.sh'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.AWS_EC2_HOST }} 'cd /home/ubuntu/deploy_backyard && bash deploy_script.sh'

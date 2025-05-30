@@ -29,7 +29,7 @@ COPY . .
 # RUN rake assets:precompile
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3001
 
 # Start the server
 CMD ["rails", "server", "-b", "0.0.0.0"]
