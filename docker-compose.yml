@@ -1,34 +1,27 @@
-version: '3'
+version: '3.8'
+
 services:
-  # redis:
-    # image: redis:6.2
-    # networks:
-    #   - app_network
   web:
     build: .
-    image: nicolasmd/backyardrails:latest
-    ports:
-      - "3001:3000"
     #for production dont use volumes
     # network_mode: "host"      
     # volumes:
     #   - .:/app
-    # depends_on:
-    #   - redis
+    image: ${DOCKERHUB_USERNAME:-nicolasmd}/backyardrails:latest
+    ports:
+      - "127.0.0.1:3001:3000"
     env_file:
-      - .env.${ENV}
+      - .env.${ENV:-production}
     environment:
       TZ: America/New_York
-      RAILS_ENV: ${ENV}
-    networks:
-      - app_network
-    tty: true
-    stdin_open: true
+      RAILS_ENV: ${ENV:-production}
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-
-networks:
-  app_network:

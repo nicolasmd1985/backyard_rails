@@ -16,17 +16,28 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     xfonts-75dpi \
     xfonts-base \
-    libjpeg62-turbo
+    libjpeg62-turbo \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-
+# Create app directory
 RUN mkdir /app
 WORKDIR /app
+
+# Copy Gemfile and install gems
 COPY Gemfile Gemfile.lock ./
 RUN gem install bundler
 RUN bundle install
+
+# Copy application code
 COPY . .
 
-# RUN rake assets:precompile
+# Precompile assets for production
+RUN RAILS_ENV=production bundle exec rake assets:precompile
+
+# Create a non-root user
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
 
 # Expose the port
 EXPOSE 3001
