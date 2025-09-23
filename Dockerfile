@@ -32,9 +32,6 @@ RUN bundle install
 # Copy application code
 COPY . .
 
-# Precompile assets for production
-RUN RAILS_ENV=production bundle exec rake assets:precompile
-
 # Create a non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
